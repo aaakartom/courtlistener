@@ -24,7 +24,7 @@ def merge_citations(keeper, clust):
             for field in citation_fields:
                 k_val = getattr(k, field)
                 c_val = getattr(c, field)
-                if k_val not in [None, ""] and c_val not in [None, ""] and k_val != c_val:
+                if k_val is not None and c_val is not None and k_val != c_val:
                     conflict_found = True
                     break
 
