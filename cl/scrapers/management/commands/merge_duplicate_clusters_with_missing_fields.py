@@ -38,7 +38,7 @@ def merge_citations(keeper, clust):
             for field in citation_fields:
                 keeper_val = getattr(matched, field)
                 c_val = getattr(c, field)
-                if keeper_val in [None, ""] and c_val not in [None, ""]:
+                if keeper_val is not None and c_val is not None]:
                     setattr(matched, field, c_val)
 
             # Save only if no duplicate exists
@@ -113,7 +113,7 @@ def fill_opinion_metadata(opinion: Opinion):
 
     # Merging fields if found some fields in the text of the opinion
     if data.get("court") and not cluster.docket.court:
-        cluster.docket.court = data["case_name"]
+        cluster.docket.court = data["court"]
         cluster.docket.save()
 
     if data.get("case_name") and not cluster.case_name:
@@ -177,6 +177,7 @@ def ready_to_merge(keeper, clust):
         "other_dates": (keeper.other_dates, clust.other_dates),
         "cross_reference": (keeper.cross_reference, clust.cross_reference),
         "correction": (keeper.correction, clust.correction),
+        "date_filed": (keeper.date_filed, clust.date_filed)
     }
 
     # Getting opinions from clusters
@@ -193,8 +194,8 @@ def ready_to_merge(keeper, clust):
                 )
 
                 if (
-                    (keeper_citation_val not in [None, ])
-                    and (other_cluster_citation_val not in [None, ])
+                    (keeper_citation_val is not None)
+                    and (other_cluster_citation_val is not None)
                     and (keeper_citation_val != other_cluster_citation_val)
                 ):
                     return 0
@@ -364,6 +365,10 @@ class Command(VerboseCommand):
                             "correction": (
                                 keeper.correction,
                                 other_cluster.correction,
+                            ),
+                            "date_filed":
+                                keeper.date_filed,
+                                other_cluster.date_filed,
                             ),
                         }
 
